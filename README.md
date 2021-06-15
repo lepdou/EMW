@@ -17,17 +17,17 @@ String key = "someKey";
 config.getProperty(key, "someDefaultValue");
 ```
 
-## EMW-mq (未实现)
+## EMW-MQ (未实现)
 应用内部经常有这样的场景 1. 集群内广播事件 2. 集群内异步执行，这两个场景可以通过内嵌的消息队列实现。
 
-## EMW-lock (未实现)
+## EMW-Lock (未实现)
 通过应用自身的数据库实现分布式锁的能力。
 
-## EMW-election （未实现）
+## EMW-Election （未实现）
 通过应用自身的数据库实现分布式选主能力，相比于 raft 之类的协议，通过数据库实现更加简单满足绝大部分场景。
 
-## EMW-discovery （未实现）
+## EMW-Discovery （未实现）
 通过应用自身的数据库实现简易的服务注册发现能力
 
-## EMW-scheduler (未实现)
+## EMW-Scheduler (未实现)
 通过应用自身的数据库实现简易的集群定时任务能力
