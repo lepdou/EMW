@@ -6,10 +6,12 @@
     <packaging>pom</packaging>
     <modules>
         <module>emw-config</module>
-        <module>emw-register</module>
+        <module>emw-discovery</module>
         <module>emw-mq</module>
         <module>emw-scheduler</module>
         <module>emw-demo</module>
+        <module>emw-lock</module>
+        <module>emw-election</module>
     </modules>
 
     <parent>
