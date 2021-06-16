@@ -3,3 +3,11 @@ apollo:
     enabled: true
     # will inject 'application' and 'TEST1.apollo' namespaces in bootstrap phase
     namespaces: application,TEST1.apollo,application.yaml
+
+emw:
+  emw-config:
+    bootstrap:
+      jdbc:
+        url: jdbc:mysql://localhost:3306/emw
+        username: root
+        password: admin

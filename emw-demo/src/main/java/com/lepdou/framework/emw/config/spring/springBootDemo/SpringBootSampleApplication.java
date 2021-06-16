@@ -3,9 +3,12 @@ package com.lepdou.framework.emw.config.spring.springBootDemo;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.lepdou.framework.emw.config.spring.common.bean.AnnotatedBean;
+import com.lepdou.framework.emw.config.spring.springBootDemo.config.SampleRedisConfig;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +26,14 @@ public class SpringBootSampleApplication {
     private AnnotatedBean annotatedBean;
 
     public static void main(String[] args) throws IOException {
-        SpringApplication.run(SpringBootSampleApplication.class, args);
+        ApplicationContext context = new SpringApplicationBuilder(SpringBootSampleApplication.class).run(args);
+        AnnotatedBean annotatedBean = context.getBean(AnnotatedBean.class);
+        SampleRedisConfig redisConfig = null;
+        try {
+            redisConfig = context.getBean(SampleRedisConfig.class);
+        } catch (NoSuchBeanDefinitionException ex) {
+            System.out.println("SampleRedisConfig is null, 'redis.cache.enabled' must have been set to false.");
+        }
 
         System.out.println("SpringBootSampleApplication Demo. Input any key except quit to print the values. Input quit to exit.");
         while (true) {
@@ -33,6 +43,10 @@ public class SpringBootSampleApplication {
                 System.exit(0);
             }
 
+            System.out.println(annotatedBean.toString());
+            if (redisConfig != null) {
+                System.out.println(redisConfig.toString());
+            }
         }
     }
 }
