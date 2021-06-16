@@ -24,8 +24,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Documented
 public @interface ApolloConfig {
-  /**
-   * Apollo namespace for the config, if not specified then default to application
-   */
-  String value() default ConfigConsts.NAMESPACE_APPLICATION;
+    /**
+     * Apollo namespace for the config, if not specified then default to application
+     */
+    String value() default ConfigConsts.NAMESPACE_APPLICATION;
 }

@@ -46,5 +46,4 @@ public class EMWConfigParams {
      */
     private int pollingDBLogSampleRate;
 
-
 }

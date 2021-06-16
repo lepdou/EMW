@@ -39,109 +39,109 @@ import java.util.Set;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class PropertySourcesProcessor implements BeanFactoryPostProcessor, EnvironmentAware, PriorityOrdered {
-  private static final Multimap<Integer, String> NAMESPACE_NAMES                        = LinkedHashMultimap.create();
-  private static final Set<BeanFactory>          AUTO_UPDATE_INITIALIZED_BEAN_FACTORIES = Sets.newConcurrentHashSet();
+    private static final Multimap<Integer, String> NAMESPACE_NAMES                        = LinkedHashMultimap.create();
+    private static final Set<BeanFactory>          AUTO_UPDATE_INITIALIZED_BEAN_FACTORIES = Sets.newConcurrentHashSet();
 
-  private final ConfigPropertySourceFactory configPropertySourceFactory = SpringInjector
-      .getInstance(ConfigPropertySourceFactory.class);
-  private final ConfigUtil                  configUtil                  = ApolloInjector.getInstance(ConfigUtil.class);
-  private       ConfigurableEnvironment     environment;
+    private final ConfigPropertySourceFactory configPropertySourceFactory = SpringInjector
+            .getInstance(ConfigPropertySourceFactory.class);
+    private final ConfigUtil                  configUtil                  = ApolloInjector.getInstance(ConfigUtil.class);
+    private       ConfigurableEnvironment     environment;
 
-  public static boolean addNamespaces(Collection<String> namespaces, int order) {
-    return NAMESPACE_NAMES.putAll(order, namespaces);
-  }
-
-  @Override
-  public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-    initializePropertySources();
-    initializeAutoUpdatePropertiesFeature(beanFactory);
-  }
-
-  private void initializePropertySources() {
-    if (environment.getPropertySources().contains(PropertySourcesConstants.APOLLO_PROPERTY_SOURCE_NAME)) {
-      //already initialized
-      return;
-    }
-    CompositePropertySource composite = new CompositePropertySource(PropertySourcesConstants.APOLLO_PROPERTY_SOURCE_NAME);
-
-    //sort by order asc
-    ImmutableSortedSet<Integer> orders = ImmutableSortedSet.copyOf(NAMESPACE_NAMES.keySet());
-    Iterator<Integer> iterator = orders.iterator();
-
-    while (iterator.hasNext()) {
-      int order = iterator.next();
-      for (String namespace : NAMESPACE_NAMES.get(order)) {
-        Config config = ConfigService.getConfig(namespace);
-
-        composite.addPropertySource(configPropertySourceFactory.getConfigPropertySource(namespace, config));
-      }
+    public static boolean addNamespaces(Collection<String> namespaces, int order) {
+        return NAMESPACE_NAMES.putAll(order, namespaces);
     }
 
-    // clean up
-    NAMESPACE_NAMES.clear();
-
-    // ensure ApolloBootstrapPropertySources is still the first
-    ensureBootstrapPropertyPrecedence(environment);
-
-    if (CollectionUtils.isEmpty(composite.getPropertySources())) {
-      return;
-    }
-    // add after the bootstrap property source or to the first
-    if (environment.getPropertySources()
-        .contains(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME)) {
-      environment.getPropertySources()
-          .addAfter(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME, composite);
-    } else {
-      environment.getPropertySources().addFirst(composite);
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        initializePropertySources();
+        initializeAutoUpdatePropertiesFeature(beanFactory);
     }
 
-  }
+    private void initializePropertySources() {
+        if (environment.getPropertySources().contains(PropertySourcesConstants.APOLLO_PROPERTY_SOURCE_NAME)) {
+            //already initialized
+            return;
+        }
+        CompositePropertySource composite = new CompositePropertySource(PropertySourcesConstants.APOLLO_PROPERTY_SOURCE_NAME);
 
-  private void ensureBootstrapPropertyPrecedence(ConfigurableEnvironment environment) {
-    MutablePropertySources propertySources = environment.getPropertySources();
+        //sort by order asc
+        ImmutableSortedSet<Integer> orders = ImmutableSortedSet.copyOf(NAMESPACE_NAMES.keySet());
+        Iterator<Integer> iterator = orders.iterator();
 
-    PropertySource<?> bootstrapPropertySource = propertySources
-        .get(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME);
+        while (iterator.hasNext()) {
+            int order = iterator.next();
+            for (String namespace : NAMESPACE_NAMES.get(order)) {
+                Config config = ConfigService.getConfig(namespace);
 
-    // not exists or already in the first place
-    if (bootstrapPropertySource == null || propertySources.precedenceOf(bootstrapPropertySource) == 0) {
-      return;
+                composite.addPropertySource(configPropertySourceFactory.getConfigPropertySource(namespace, config));
+            }
+        }
+
+        // clean up
+        NAMESPACE_NAMES.clear();
+
+        // ensure ApolloBootstrapPropertySources is still the first
+        ensureBootstrapPropertyPrecedence(environment);
+
+        if (CollectionUtils.isEmpty(composite.getPropertySources())) {
+            return;
+        }
+        // add after the bootstrap property source or to the first
+        if (environment.getPropertySources()
+                .contains(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME)) {
+            environment.getPropertySources()
+                    .addAfter(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME, composite);
+        } else {
+            environment.getPropertySources().addFirst(composite);
+        }
+
     }
 
-    propertySources.remove(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME);
-    propertySources.addFirst(bootstrapPropertySource);
-  }
+    private void ensureBootstrapPropertyPrecedence(ConfigurableEnvironment environment) {
+        MutablePropertySources propertySources = environment.getPropertySources();
 
-  private void initializeAutoUpdatePropertiesFeature(ConfigurableListableBeanFactory beanFactory) {
-    if (!configUtil.isAutoUpdateInjectedSpringPropertiesEnabled() ||
-        !AUTO_UPDATE_INITIALIZED_BEAN_FACTORIES.add(beanFactory)) {
-      return;
+        PropertySource<?> bootstrapPropertySource = propertySources
+                .get(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME);
+
+        // not exists or already in the first place
+        if (bootstrapPropertySource == null || propertySources.precedenceOf(bootstrapPropertySource) == 0) {
+            return;
+        }
+
+        propertySources.remove(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME);
+        propertySources.addFirst(bootstrapPropertySource);
     }
 
-    AutoUpdateConfigChangeListener autoUpdateConfigChangeListener = new AutoUpdateConfigChangeListener(
-        environment, beanFactory);
+    private void initializeAutoUpdatePropertiesFeature(ConfigurableListableBeanFactory beanFactory) {
+        if (!configUtil.isAutoUpdateInjectedSpringPropertiesEnabled() ||
+                !AUTO_UPDATE_INITIALIZED_BEAN_FACTORIES.add(beanFactory)) {
+            return;
+        }
 
-    List<ConfigPropertySource> configPropertySources = configPropertySourceFactory.getAllConfigPropertySources();
-    for (ConfigPropertySource configPropertySource : configPropertySources) {
-      configPropertySource.addChangeListener(autoUpdateConfigChangeListener);
+        AutoUpdateConfigChangeListener autoUpdateConfigChangeListener = new AutoUpdateConfigChangeListener(
+                environment, beanFactory);
+
+        List<ConfigPropertySource> configPropertySources = configPropertySourceFactory.getAllConfigPropertySources();
+        for (ConfigPropertySource configPropertySource : configPropertySources) {
+            configPropertySource.addChangeListener(autoUpdateConfigChangeListener);
+        }
     }
-  }
 
-  @Override
-  public void setEnvironment(Environment environment) {
-    //it is safe enough to cast as all known environment is derived from ConfigurableEnvironment
-    this.environment = (ConfigurableEnvironment) environment;
-  }
+    @Override
+    public void setEnvironment(Environment environment) {
+        //it is safe enough to cast as all known environment is derived from ConfigurableEnvironment
+        this.environment = (ConfigurableEnvironment) environment;
+    }
 
-  @Override
-  public int getOrder() {
-    //make it as early as possible
-    return Ordered.HIGHEST_PRECEDENCE;
-  }
+    @Override
+    public int getOrder() {
+        //make it as early as possible
+        return Ordered.HIGHEST_PRECEDENCE;
+    }
 
-  // for test only
-  static void reset() {
-    NAMESPACE_NAMES.clear();
-    AUTO_UPDATE_INITIALIZED_BEAN_FACTORIES.clear();
-  }
+    // for test only
+    static void reset() {
+        NAMESPACE_NAMES.clear();
+        AUTO_UPDATE_INITIALIZED_BEAN_FACTORIES.clear();
+    }
 }

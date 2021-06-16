@@ -27,8 +27,8 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ApolloJsonValue {
 
-  /**
-   * The actual value expression: e.g. "${someJsonPropertyKey:someDefaultValue}".
-   */
-  String value();
+    /**
+     * The actual value expression: e.g. "${someJsonPropertyKey:someDefaultValue}".
+     */
+    String value();
 }

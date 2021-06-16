@@ -6,5 +6,5 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 public interface ConfigPropertySourcesProcessorHelper extends Ordered {
 
-  void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException;
+    void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException;
 }

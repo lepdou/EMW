@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnMissingBean(PropertySourcesProcessor.class)
 public class ApolloAutoConfiguration {
 
-  @Bean
-  public ConfigPropertySourcesProcessor configPropertySourcesProcessor() {
-    return new ConfigPropertySourcesProcessor();
-  }
+    @Bean
+    public ConfigPropertySourcesProcessor configPropertySourcesProcessor() {
+        return new ConfigPropertySourcesProcessor();
+    }
 }

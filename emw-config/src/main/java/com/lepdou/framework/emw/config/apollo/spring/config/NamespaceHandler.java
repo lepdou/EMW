@@ -13,44 +13,44 @@ import org.w3c.dom.Element;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class NamespaceHandler extends NamespaceHandlerSupport {
-  private static final Splitter NAMESPACE_SPLITTER = Splitter.on(",").omitEmptyStrings().trimResults();
+    private static final Splitter NAMESPACE_SPLITTER = Splitter.on(",").omitEmptyStrings().trimResults();
 
-  @Override
-  public void init() {
-    registerBeanDefinitionParser("config", new BeanParser());
-  }
-
-  static class BeanParser extends AbstractSingleBeanDefinitionParser {
     @Override
-    protected Class<?> getBeanClass(Element element) {
-      return ConfigPropertySourcesProcessor.class;
+    public void init() {
+        registerBeanDefinitionParser("config", new BeanParser());
     }
 
-    @Override
-    protected boolean shouldGenerateId() {
-      return true;
-    }
-
-    @Override
-    protected void doParse(Element element, BeanDefinitionBuilder builder) {
-      String namespaces = element.getAttribute("namespaces");
-      //default to application
-      if (Strings.isNullOrEmpty(namespaces)) {
-        namespaces = ConfigConsts.NAMESPACE_APPLICATION;
-      }
-
-      int order = Ordered.LOWEST_PRECEDENCE;
-      String orderAttribute = element.getAttribute("order");
-
-      if (!Strings.isNullOrEmpty(orderAttribute)) {
-        try {
-          order = Integer.parseInt(orderAttribute);
-        } catch (Throwable ex) {
-          throw new IllegalArgumentException(
-              String.format("Invalid order: %s for namespaces: %s", orderAttribute, namespaces));
+    static class BeanParser extends AbstractSingleBeanDefinitionParser {
+        @Override
+        protected Class<?> getBeanClass(Element element) {
+            return ConfigPropertySourcesProcessor.class;
         }
-      }
-      PropertySourcesProcessor.addNamespaces(NAMESPACE_SPLITTER.splitToList(namespaces), order);
+
+        @Override
+        protected boolean shouldGenerateId() {
+            return true;
+        }
+
+        @Override
+        protected void doParse(Element element, BeanDefinitionBuilder builder) {
+            String namespaces = element.getAttribute("namespaces");
+            //default to application
+            if (Strings.isNullOrEmpty(namespaces)) {
+                namespaces = ConfigConsts.NAMESPACE_APPLICATION;
+            }
+
+            int order = Ordered.LOWEST_PRECEDENCE;
+            String orderAttribute = element.getAttribute("order");
+
+            if (!Strings.isNullOrEmpty(orderAttribute)) {
+                try {
+                    order = Integer.parseInt(orderAttribute);
+                } catch (Throwable ex) {
+                    throw new IllegalArgumentException(
+                            String.format("Invalid order: %s for namespaces: %s", orderAttribute, namespaces));
+                }
+            }
+            PropertySourcesProcessor.addNamespaces(NAMESPACE_SPLITTER.splitToList(namespaces), order);
+        }
     }
-  }
 }

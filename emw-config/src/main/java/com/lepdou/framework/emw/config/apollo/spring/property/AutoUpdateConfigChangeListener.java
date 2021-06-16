@@ -21,103 +21,105 @@ import java.util.Set;
  * Create by zhangzheng on 2018/3/6
  */
 public class AutoUpdateConfigChangeListener implements ConfigChangeListener {
-  private static final Logger logger = LoggerFactory.getLogger(com.lepdou.framework.emw.config.apollo.spring.property.AutoUpdateConfigChangeListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            com.lepdou.framework.emw.config.apollo.spring.property.AutoUpdateConfigChangeListener.class);
 
-  private final boolean                 typeConverterHasConvertIfNecessaryWithFieldParameter;
-  private final Environment             environment;
-  private final ConfigurableBeanFactory beanFactory;
-  private final TypeConverter           typeConverter;
-  private final PlaceholderHelper       placeholderHelper;
-  private final SpringValueRegistry     springValueRegistry;
-  private final Gson                    gson;
+    private final boolean                 typeConverterHasConvertIfNecessaryWithFieldParameter;
+    private final Environment             environment;
+    private final ConfigurableBeanFactory beanFactory;
+    private final TypeConverter           typeConverter;
+    private final PlaceholderHelper       placeholderHelper;
+    private final SpringValueRegistry     springValueRegistry;
+    private final Gson                    gson;
 
-  public AutoUpdateConfigChangeListener(Environment environment, ConfigurableListableBeanFactory beanFactory){
-    this.typeConverterHasConvertIfNecessaryWithFieldParameter = testTypeConverterHasConvertIfNecessaryWithFieldParameter();
-    this.beanFactory = beanFactory;
-    this.typeConverter = this.beanFactory.getTypeConverter();
-    this.environment = environment;
-    this.placeholderHelper = SpringInjector.getInstance(PlaceholderHelper.class);
-    this.springValueRegistry = SpringInjector.getInstance(SpringValueRegistry.class);
-    this.gson = new Gson();
-  }
-
-  @Override
-  public void onChange(ConfigChangeEvent changeEvent) {
-    Set<String> keys = changeEvent.changedKeys();
-    if (CollectionUtils.isEmpty(keys)) {
-      return;
+    public AutoUpdateConfigChangeListener(Environment environment, ConfigurableListableBeanFactory beanFactory) {
+        this.typeConverterHasConvertIfNecessaryWithFieldParameter = testTypeConverterHasConvertIfNecessaryWithFieldParameter();
+        this.beanFactory = beanFactory;
+        this.typeConverter = this.beanFactory.getTypeConverter();
+        this.environment = environment;
+        this.placeholderHelper = SpringInjector.getInstance(PlaceholderHelper.class);
+        this.springValueRegistry = SpringInjector.getInstance(SpringValueRegistry.class);
+        this.gson = new Gson();
     }
-    for (String key : keys) {
-      // 1. check whether the changed key is relevant
-      Collection<SpringValue> targetValues = springValueRegistry.get(beanFactory, key);
-      if (targetValues == null || targetValues.isEmpty()) {
-        continue;
-      }
 
-      // 2. update the value
-      for (SpringValue val : targetValues) {
-        updateSpringValue(val);
-      }
-    }
-  }
-
-  private void updateSpringValue(SpringValue springValue) {
-    try {
-      Object value = resolvePropertyValue(springValue);
-      springValue.update(value);
-
-      logger.info("Auto update apollo changed value successfully, new value: {}, {}", value,
-          springValue);
-    } catch (Throwable ex) {
-      logger.error("Auto update apollo changed value failed, {}", springValue.toString(), ex);
-    }
-  }
-
-  /**
-   * Logic transplanted from DefaultListableBeanFactory
-   * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#doResolveDependency(org.springframework.beans.factory.config.DependencyDescriptor, String, Set, org.springframework.beans.TypeConverter)
-   */
-  private Object resolvePropertyValue(SpringValue springValue) {
-    // value will never be null, as @Value and @ApolloJsonValue will not allow that
-    Object value = placeholderHelper
-        .resolvePropertyValue(beanFactory, springValue.getBeanName(), springValue.getPlaceholder());
-
-    if (springValue.isJson()) {
-      value = parseJsonValue((String)value, springValue.getGenericType());
-    } else {
-      if (springValue.isField()) {
-        // org.springframework.beans.TypeConverter#convertIfNecessary(java.lang.Object, java.lang.Class, java.lang.reflect.Field) is available from Spring 3.2.0+
-        if (typeConverterHasConvertIfNecessaryWithFieldParameter) {
-          value = this.typeConverter
-              .convertIfNecessary(value, springValue.getTargetType(), springValue.getField());
-        } else {
-          value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType());
+    @Override
+    public void onChange(ConfigChangeEvent changeEvent) {
+        Set<String> keys = changeEvent.changedKeys();
+        if (CollectionUtils.isEmpty(keys)) {
+            return;
         }
-      } else {
-        value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
-            springValue.getMethodParameter());
-      }
+        for (String key : keys) {
+            // 1. check whether the changed key is relevant
+            Collection<SpringValue> targetValues = springValueRegistry.get(beanFactory, key);
+            if (targetValues == null || targetValues.isEmpty()) {
+                continue;
+            }
+
+            // 2. update the value
+            for (SpringValue val : targetValues) {
+                updateSpringValue(val);
+            }
+        }
     }
 
-    return value;
-  }
+    private void updateSpringValue(SpringValue springValue) {
+        try {
+            Object value = resolvePropertyValue(springValue);
+            springValue.update(value);
 
-  private Object parseJsonValue(String json, Type targetType) {
-    try {
-      return gson.fromJson(json, targetType);
-    } catch (Throwable ex) {
-      logger.error("Parsing json '{}' to type {} failed!", json, targetType, ex);
-      throw ex;
-    }
-  }
-
-  private boolean testTypeConverterHasConvertIfNecessaryWithFieldParameter() {
-    try {
-      TypeConverter.class.getMethod("convertIfNecessary", Object.class, Class.class, Field.class);
-    } catch (Throwable ex) {
-      return false;
+            logger.info("Auto update apollo changed value successfully, new value: {}, {}", value,
+                    springValue);
+        } catch (Throwable ex) {
+            logger.error("Auto update apollo changed value failed, {}", springValue.toString(), ex);
+        }
     }
 
-    return true;
-  }
+    /**
+     * Logic transplanted from DefaultListableBeanFactory
+     * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#doResolveDependency(org.springframework.beans.factory.config.DependencyDescriptor, String, Set, org.springframework.beans.TypeConverter)
+     */
+    private Object resolvePropertyValue(SpringValue springValue) {
+        // value will never be null, as @Value and @ApolloJsonValue will not allow that
+        Object value = placeholderHelper
+                .resolvePropertyValue(beanFactory, springValue.getBeanName(), springValue.getPlaceholder());
+
+        if (springValue.isJson()) {
+            value = parseJsonValue((String) value, springValue.getGenericType());
+        } else {
+            if (springValue.isField()) {
+                // org.springframework.beans.TypeConverter#convertIfNecessary(java.lang.Object, java.lang.Class, java.lang.reflect.Field)
+                //is available from Spring 3.2.0+
+                if (typeConverterHasConvertIfNecessaryWithFieldParameter) {
+                    value = this.typeConverter
+                            .convertIfNecessary(value, springValue.getTargetType(), springValue.getField());
+                } else {
+                    value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType());
+                }
+            } else {
+                value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
+                        springValue.getMethodParameter());
+            }
+        }
+
+        return value;
+    }
+
+    private Object parseJsonValue(String json, Type targetType) {
+        try {
+            return gson.fromJson(json, targetType);
+        } catch (Throwable ex) {
+            logger.error("Parsing json '{}' to type {} failed!", json, targetType, ex);
+            throw ex;
+        }
+    }
+
+    private boolean testTypeConverterHasConvertIfNecessaryWithFieldParameter() {
+        try {
+            TypeConverter.class.getMethod("convertIfNecessary", Object.class, Class.class, Field.class);
+        } catch (Throwable ex) {
+            return false;
+        }
+
+        return true;
+    }
 }

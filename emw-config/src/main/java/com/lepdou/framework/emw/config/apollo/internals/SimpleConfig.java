@@ -20,88 +20,89 @@ import java.util.Set;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class SimpleConfig extends AbstractConfig implements RepositoryChangeListener {
-  private static final Logger           logger       = LoggerFactory.getLogger(com.lepdou.framework.emw.config.apollo.internals.SimpleConfig.class);
-  private final        String           m_namespace;
-  private final        ConfigRepository m_configRepository;
-  private volatile Properties       m_configProperties;
-  private volatile ConfigSourceType m_sourceType = ConfigSourceType.NONE;
+    private static final Logger           logger       = LoggerFactory.getLogger(
+            com.lepdou.framework.emw.config.apollo.internals.SimpleConfig.class);
+    private final        String           m_namespace;
+    private final        ConfigRepository m_configRepository;
+    private volatile     Properties       m_configProperties;
+    private volatile     ConfigSourceType m_sourceType = ConfigSourceType.NONE;
 
-  /**
-   * Constructor.
-   *
-   * @param namespace        the namespace for this config instance
-   * @param configRepository the config repository for this config instance
-   */
-  public SimpleConfig(String namespace, ConfigRepository configRepository) {
-    m_namespace = namespace;
-    m_configRepository = configRepository;
-    this.initialize();
-  }
-
-  private void initialize() {
-    try {
-      updateConfig(m_configRepository.getConfig(), m_configRepository.getSourceType());
-    } catch (Throwable ex) {
-      Tracer.logError(ex);
-      logger.warn("Init Apollo Simple Config failed - namespace: {}, reason: {}", m_namespace,
-          ExceptionUtil.getDetailMessage(ex));
-    } finally {
-      //register the change listener no matter config repository is working or not
-      //so that whenever config repository is recovered, config could get changed
-      m_configRepository.addChangeListener(this);
-    }
-  }
-
-  @Override
-  public String getProperty(String key, String defaultValue) {
-    if (m_configProperties == null) {
-      logger.warn("Could not load config from Apollo, always return default value!");
-      return defaultValue;
-    }
-    return this.m_configProperties.getProperty(key, defaultValue);
-  }
-
-  @Override
-  public Set<String> getPropertyNames() {
-    if (m_configProperties == null) {
-      return Collections.emptySet();
+    /**
+     * Constructor.
+     *
+     * @param namespace        the namespace for this config instance
+     * @param configRepository the config repository for this config instance
+     */
+    public SimpleConfig(String namespace, ConfigRepository configRepository) {
+        m_namespace = namespace;
+        m_configRepository = configRepository;
+        this.initialize();
     }
 
-    return m_configProperties.stringPropertyNames();
-  }
-
-  @Override
-  public ConfigSourceType getSourceType() {
-    return m_sourceType;
-  }
-
-  @Override
-  public synchronized void onRepositoryChange(String namespace, Properties newProperties) {
-    if (newProperties.equals(m_configProperties)) {
-      return;
+    private void initialize() {
+        try {
+            updateConfig(m_configRepository.getConfig(), m_configRepository.getSourceType());
+        } catch (Throwable ex) {
+            Tracer.logError(ex);
+            logger.warn("Init Apollo Simple Config failed - namespace: {}, reason: {}", m_namespace,
+                    ExceptionUtil.getDetailMessage(ex));
+        } finally {
+            //register the change listener no matter config repository is working or not
+            //so that whenever config repository is recovered, config could get changed
+            m_configRepository.addChangeListener(this);
+        }
     }
-    Properties newConfigProperties = new Properties();
-    newConfigProperties.putAll(newProperties);
 
-    List<ConfigChange> changes = calcPropertyChanges(namespace, m_configProperties, newConfigProperties);
-    Map<String, ConfigChange> changeMap = Maps.uniqueIndex(changes,
-        new Function<ConfigChange, String>() {
-          @Override
-          public String apply(ConfigChange input) {
-            return input.getPropertyName();
-          }
-        });
+    @Override
+    public String getProperty(String key, String defaultValue) {
+        if (m_configProperties == null) {
+            logger.warn("Could not load config from Apollo, always return default value!");
+            return defaultValue;
+        }
+        return this.m_configProperties.getProperty(key, defaultValue);
+    }
 
-    updateConfig(newConfigProperties, m_configRepository.getSourceType());
-    clearConfigCache();
+    @Override
+    public Set<String> getPropertyNames() {
+        if (m_configProperties == null) {
+            return Collections.emptySet();
+        }
 
-    this.fireConfigChange(new ConfigChangeEvent(m_namespace, changeMap));
+        return m_configProperties.stringPropertyNames();
+    }
 
-    Tracer.logEvent("Apollo.Client.ConfigChanges", m_namespace);
-  }
+    @Override
+    public ConfigSourceType getSourceType() {
+        return m_sourceType;
+    }
 
-  private void updateConfig(Properties newConfigProperties, ConfigSourceType sourceType) {
-    m_configProperties = newConfigProperties;
-    m_sourceType = sourceType;
-  }
+    @Override
+    public synchronized void onRepositoryChange(String namespace, Properties newProperties) {
+        if (newProperties.equals(m_configProperties)) {
+            return;
+        }
+        Properties newConfigProperties = new Properties();
+        newConfigProperties.putAll(newProperties);
+
+        List<ConfigChange> changes = calcPropertyChanges(namespace, m_configProperties, newConfigProperties);
+        Map<String, ConfigChange> changeMap = Maps.uniqueIndex(changes,
+                new Function<ConfigChange, String>() {
+                    @Override
+                    public String apply(ConfigChange input) {
+                        return input.getPropertyName();
+                    }
+                });
+
+        updateConfig(newConfigProperties, m_configRepository.getSourceType());
+        clearConfigCache();
+
+        this.fireConfigChange(new ConfigChangeEvent(m_namespace, changeMap));
+
+        Tracer.logEvent("Apollo.Client.ConfigChanges", m_namespace);
+    }
+
+    private void updateConfig(Properties newConfigProperties, ConfigSourceType sourceType) {
+        m_configProperties = newConfigProperties;
+        m_sourceType = sourceType;
+    }
 }

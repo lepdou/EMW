@@ -27,99 +27,99 @@ import java.util.Set;
  */
 public class ApolloJsonValueProcessor extends ApolloProcessor implements BeanFactoryAware {
 
-  private static final Logger logger = LoggerFactory.getLogger(ApolloJsonValueProcessor.class);
-  private static final Gson   gson   = new Gson();
+    private static final Logger logger = LoggerFactory.getLogger(ApolloJsonValueProcessor.class);
+    private static final Gson   gson   = new Gson();
 
-  private final ConfigUtil          configUtil;
-  private final PlaceholderHelper       placeholderHelper;
-  private final SpringValueRegistry     springValueRegistry;
-  private       ConfigurableBeanFactory beanFactory;
+    private final ConfigUtil              configUtil;
+    private final PlaceholderHelper       placeholderHelper;
+    private final SpringValueRegistry     springValueRegistry;
+    private       ConfigurableBeanFactory beanFactory;
 
-  public ApolloJsonValueProcessor() {
-    configUtil = ApolloInjector.getInstance(ConfigUtil.class);
-    placeholderHelper = SpringInjector.getInstance(PlaceholderHelper.class);
-    springValueRegistry = SpringInjector.getInstance(SpringValueRegistry.class);
-  }
-
-  @Override
-  protected void processField(Object bean, String beanName, Field field) {
-    ApolloJsonValue apolloJsonValue = AnnotationUtils.getAnnotation(field, ApolloJsonValue.class);
-    if (apolloJsonValue == null) {
-      return;
-    }
-    String placeholder = apolloJsonValue.value();
-    Object propertyValue = placeholderHelper
-        .resolvePropertyValue(beanFactory, beanName, placeholder);
-
-    // propertyValue will never be null, as @ApolloJsonValue will not allow that
-    if (!(propertyValue instanceof String)) {
-      return;
+    public ApolloJsonValueProcessor() {
+        configUtil = ApolloInjector.getInstance(ConfigUtil.class);
+        placeholderHelper = SpringInjector.getInstance(PlaceholderHelper.class);
+        springValueRegistry = SpringInjector.getInstance(SpringValueRegistry.class);
     }
 
-    boolean accessible = field.isAccessible();
-    field.setAccessible(true);
-    ReflectionUtils
-        .setField(field, bean, parseJsonValue((String)propertyValue, field.getGenericType()));
-    field.setAccessible(accessible);
+    @Override
+    protected void processField(Object bean, String beanName, Field field) {
+        ApolloJsonValue apolloJsonValue = AnnotationUtils.getAnnotation(field, ApolloJsonValue.class);
+        if (apolloJsonValue == null) {
+            return;
+        }
+        String placeholder = apolloJsonValue.value();
+        Object propertyValue = placeholderHelper
+                .resolvePropertyValue(beanFactory, beanName, placeholder);
 
-    if (configUtil.isAutoUpdateInjectedSpringPropertiesEnabled()) {
-      Set<String> keys = placeholderHelper.extractPlaceholderKeys(placeholder);
-      for (String key : keys) {
-        SpringValue springValue = new SpringValue(key, placeholder, bean, beanName, field, true);
-        springValueRegistry.register(beanFactory, key, springValue);
-        logger.debug("Monitoring {}", springValue);
-      }
+        // propertyValue will never be null, as @ApolloJsonValue will not allow that
+        if (!(propertyValue instanceof String)) {
+            return;
+        }
+
+        boolean accessible = field.isAccessible();
+        field.setAccessible(true);
+        ReflectionUtils
+                .setField(field, bean, parseJsonValue((String) propertyValue, field.getGenericType()));
+        field.setAccessible(accessible);
+
+        if (configUtil.isAutoUpdateInjectedSpringPropertiesEnabled()) {
+            Set<String> keys = placeholderHelper.extractPlaceholderKeys(placeholder);
+            for (String key : keys) {
+                SpringValue springValue = new SpringValue(key, placeholder, bean, beanName, field, true);
+                springValueRegistry.register(beanFactory, key, springValue);
+                logger.debug("Monitoring {}", springValue);
+            }
+        }
     }
-  }
 
-  @Override
-  protected void processMethod(Object bean, String beanName, Method method) {
-    ApolloJsonValue apolloJsonValue = AnnotationUtils.getAnnotation(method, ApolloJsonValue.class);
-    if (apolloJsonValue == null) {
-      return;
+    @Override
+    protected void processMethod(Object bean, String beanName, Method method) {
+        ApolloJsonValue apolloJsonValue = AnnotationUtils.getAnnotation(method, ApolloJsonValue.class);
+        if (apolloJsonValue == null) {
+            return;
+        }
+        String placeHolder = apolloJsonValue.value();
+
+        Object propertyValue = placeholderHelper
+                .resolvePropertyValue(beanFactory, beanName, placeHolder);
+
+        // propertyValue will never be null, as @ApolloJsonValue will not allow that
+        if (!(propertyValue instanceof String)) {
+            return;
+        }
+
+        Type[] types = method.getGenericParameterTypes();
+        Preconditions.checkArgument(types.length == 1,
+                "Ignore @Value setter {}.{}, expecting 1 parameter, actual {} parameters",
+                bean.getClass().getName(), method.getName(), method.getParameterTypes().length);
+
+        boolean accessible = method.isAccessible();
+        method.setAccessible(true);
+        ReflectionUtils.invokeMethod(method, bean, parseJsonValue((String) propertyValue, types[0]));
+        method.setAccessible(accessible);
+
+        if (configUtil.isAutoUpdateInjectedSpringPropertiesEnabled()) {
+            Set<String> keys = placeholderHelper.extractPlaceholderKeys(placeHolder);
+            for (String key : keys) {
+                SpringValue springValue = new SpringValue(key, apolloJsonValue.value(), bean, beanName,
+                        method, true);
+                springValueRegistry.register(beanFactory, key, springValue);
+                logger.debug("Monitoring {}", springValue);
+            }
+        }
     }
-    String placeHolder = apolloJsonValue.value();
 
-    Object propertyValue = placeholderHelper
-        .resolvePropertyValue(beanFactory, beanName, placeHolder);
-
-    // propertyValue will never be null, as @ApolloJsonValue will not allow that
-    if (!(propertyValue instanceof String)) {
-      return;
+    private Object parseJsonValue(String json, Type targetType) {
+        try {
+            return gson.fromJson(json, targetType);
+        } catch (Throwable ex) {
+            logger.error("Parsing json '{}' to type {} failed!", json, targetType, ex);
+            throw ex;
+        }
     }
 
-    Type[] types = method.getGenericParameterTypes();
-    Preconditions.checkArgument(types.length == 1,
-        "Ignore @Value setter {}.{}, expecting 1 parameter, actual {} parameters",
-        bean.getClass().getName(), method.getName(), method.getParameterTypes().length);
-
-    boolean accessible = method.isAccessible();
-    method.setAccessible(true);
-    ReflectionUtils.invokeMethod(method, bean, parseJsonValue((String)propertyValue, types[0]));
-    method.setAccessible(accessible);
-
-    if (configUtil.isAutoUpdateInjectedSpringPropertiesEnabled()) {
-      Set<String> keys = placeholderHelper.extractPlaceholderKeys(placeHolder);
-      for (String key : keys) {
-        SpringValue springValue = new SpringValue(key, apolloJsonValue.value(), bean, beanName,
-            method, true);
-        springValueRegistry.register(beanFactory, key, springValue);
-        logger.debug("Monitoring {}", springValue);
-      }
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = (ConfigurableBeanFactory) beanFactory;
     }
-  }
-
-  private Object parseJsonValue(String json, Type targetType) {
-    try {
-      return gson.fromJson(json, targetType);
-    } catch (Throwable ex) {
-      logger.error("Parsing json '{}' to type {} failed!", json, targetType, ex);
-      throw ex;
-    }
-  }
-
-  @Override
-  public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-    this.beanFactory = (ConfigurableBeanFactory) beanFactory;
-  }
 }

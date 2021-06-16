@@ -7,17 +7,17 @@ import java.util.List;
 
 public class ConfigPropertySourceFactory {
 
-  private final List<ConfigPropertySource> configPropertySources = Lists.newLinkedList();
+    private final List<ConfigPropertySource> configPropertySources = Lists.newLinkedList();
 
-  public ConfigPropertySource getConfigPropertySource(String name, Config source) {
-    ConfigPropertySource configPropertySource = new ConfigPropertySource(name, source);
+    public ConfigPropertySource getConfigPropertySource(String name, Config source) {
+        ConfigPropertySource configPropertySource = new ConfigPropertySource(name, source);
 
-    configPropertySources.add(configPropertySource);
+        configPropertySources.add(configPropertySource);
 
-    return configPropertySource;
-  }
+        return configPropertySource;
+    }
 
-  public List<ConfigPropertySource> getAllConfigPropertySources() {
-    return Lists.newLinkedList(configPropertySources);
-  }
+    public List<ConfigPropertySource> getAllConfigPropertySources() {
+        return Lists.newLinkedList(configPropertySources);
+    }
 }

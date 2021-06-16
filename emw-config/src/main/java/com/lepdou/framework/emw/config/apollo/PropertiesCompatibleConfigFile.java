@@ -1,6 +1,5 @@
 package com.lepdou.framework.emw.config.apollo;
 
-
 import java.util.Properties;
 
 /**
@@ -10,10 +9,10 @@ import java.util.Properties;
  */
 public interface PropertiesCompatibleConfigFile extends ConfigFile {
 
-  /**
-   * @return the properties form of the config file
-   *
-   * @throws RuntimeException if the content could not be transformed to properties
-   */
-  Properties asProperties();
+    /**
+     * @return the properties form of the config file
+     *
+     * @throws RuntimeException if the content could not be transformed to properties
+     */
+    Properties asProperties();
 }
