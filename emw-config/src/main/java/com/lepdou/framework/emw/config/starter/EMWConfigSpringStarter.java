@@ -2,10 +2,9 @@
  * Alipay.com Inc.
  * Copyright (c) 2004-2021 All Rights Reserved.
  */
-package com.lepdou.framework.emw.config.spring.annotation;
+package com.lepdou.framework.emw.config.starter;
 
-import com.lepdou.framework.emw.config.EMWConfigParams;
-import com.lepdou.framework.emw.config.EMWConfigStarter;
+import com.lepdou.framework.emw.config.spring.EnableEMWConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -14,7 +13,16 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
+ * Spring 注解的方式初始化入口。
  *
+ * <pre>
+ *
+ * @EnableApolloConfig(value = "application", order = 10)
+ * @EnableEMWConfig(jdbcUrl = "jdbc:mysql://localhost:3306/emw", username = "root", password = "admin")
+ * public class AppConfig {
+ * }
+ *
+ * </pre>
  * @author lepdou
  * @version : EMWConfigSpringStarter.java, v 0.1 2021年06月16日 下午8:33 lepdou Exp $
  */

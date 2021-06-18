@@ -10,8 +10,6 @@ import com.lepdou.framework.emw.config.apollo.internals.ConfigRepository;
 import com.lepdou.framework.emw.config.bean.ConfigDO;
 import com.lepdou.framework.emw.config.core.impl.DefaultDBConfigManager;
 import com.lepdou.framework.emw.config.utils.EMWConfigUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
@@ -21,8 +19,6 @@ import java.util.Properties;
  * @version : DBConfigRepository.java, v 0.1 2021年06月10日 下午5:51 lepdou Exp $
  */
 public class DBConfigRepository extends AbstractConfigRepository {
-    private static final Logger logger = LoggerFactory.getLogger(DBConfigRepository.class);
-
     private DBConfigManager dbConfigManager;
 
     private          String   namespace;

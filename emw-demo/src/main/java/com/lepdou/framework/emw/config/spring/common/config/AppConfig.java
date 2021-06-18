@@ -1,7 +1,7 @@
 package com.lepdou.framework.emw.config.spring.common.config;
 
 import com.lepdou.framework.emw.config.apollo.spring.annotation.EnableApolloConfig;
-import com.lepdou.framework.emw.config.spring.annotation.EnableEMWConfig;
+import com.lepdou.framework.emw.config.spring.EnableEMWConfig;
 import org.springframework.context.annotation.Configuration;
 
 /**

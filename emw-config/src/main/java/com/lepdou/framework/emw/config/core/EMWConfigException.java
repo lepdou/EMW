@@ -2,7 +2,7 @@
  * Alipay.com Inc.
  * Copyright (c) 2004-2021 All Rights Reserved.
  */
-package com.lepdou.framework.emw.config;
+package com.lepdou.framework.emw.config.core;
 
 /**
  *
@@ -13,5 +13,9 @@ public class EMWConfigException extends RuntimeException {
 
     public EMWConfigException(String message) {
         super(message);
+    }
+
+    public EMWConfigException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

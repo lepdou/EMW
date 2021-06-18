@@ -25,10 +25,20 @@ public class DefaultConfigDAO implements ConfigDAO {
     private static final Logger logger = LoggerFactory.getLogger(DefaultConfigDAO.class);
 
     private static final String SQL_FIND_BY_NAMESPACE_AND_PROFILE = "select * from emw_config where namespace = ? and profile = ?";
+    private static final String SQL_SAVE_CONFIG                   = "INSERT INTO `emw_config` (`namespace`, `profile`, `value`, "
+            + "`version`, `context`, `grayRules`, `gmt_create`, `gmt_modified`, `operator`) VALUES (?, ?, ?, 1, ?, ?, NOW(), NOW(), ?)";
+    private static final String SQL_UPDATE_CONFIG                 = "update emw_config set `value` = ?,version =version+1 where "
+            + "namespace = ? and profile=?";
 
     private Connection conn;
+    private String     jdbcUrl;
+    private String     username;
+    private String     password;
 
     public DefaultConfigDAO(String url, String username, String password) {
+        this.jdbcUrl = url;
+        this.username = username;
+        this.password = password;
 
         try {
             //1. 加载数据库驱动
@@ -36,10 +46,7 @@ public class DefaultConfigDAO implements ConfigDAO {
 
             logger.info("Load jdbc driver success.");
 
-            //2.获取与数据库的链接
-            conn = DriverManager.getConnection(url, username, password);
-
-            logger.info("Create connection with database success.");
+            checkAndInitConn();
         } catch (Exception e) {
             logger.error("Connection to database failed. Please check database params. url = {}, username = {}, password = {}", url,
                     username, password, e);
@@ -69,6 +76,7 @@ public class DefaultConfigDAO implements ConfigDAO {
             logger.error("Query namespace from db failed. namespace = {}", namespace, e);
         } finally {
             if (st != null) {
+
                 try {
                     st.close();
                 } catch (SQLException e) {
@@ -112,12 +120,91 @@ public class DefaultConfigDAO implements ConfigDAO {
 
     @Override
     public ConfigDO save(ConfigDO configDO) {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(SQL_SAVE_CONFIG);
+            st.setString(1, configDO.getNamespace());
+            st.setString(2, configDO.getProfile());
+            st.setString(3, configDO.getValue());
+            st.setString(4, configDO.getContext());
+            st.setString(5, configDO.getGrayRules());
+            st.setString(6, configDO.getOperator());
+
+            st.execute();
+
+            ConfigDO savedConfig = findByNamespaceAndProfile(configDO.getNamespace(), configDO.getProfile());
+
+            logger.info("Save emw config success. config = {}", savedConfig);
+
+            return savedConfig;
+        } catch (SQLException e) {
+            logger.error("Save emw config failed. config = {}", configDO, e);
+        } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (SQLException e) {
+                    logger.error("Close connection failed. config = {}", configDO, e);
+                }
+            }
+        }
+
         return null;
     }
 
     @Override
     public ConfigDO update(ConfigDO configDO) {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(SQL_UPDATE_CONFIG);
+            st.setString(1, configDO.getValue());
+            st.setString(2, configDO.getNamespace());
+            st.setString(3, configDO.getProfile());
+
+            st.executeUpdate();
+
+            ConfigDO updatedConfig = findByNamespaceAndProfile(configDO.getNamespace(), configDO.getProfile());
+
+            logger.info("Update emw config success. config = {}", updatedConfig);
+
+            return updatedConfig;
+        } catch (SQLException e) {
+            logger.error("Update emw config failed. config = {}", configDO, e);
+        } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (SQLException e) {
+                    logger.error("Close connection failed. config = {}", configDO, e);
+                }
+            }
+        }
         return null;
+    }
+
+    private void checkAndInitConn() {
+        if (conn == null) {
+            createConn();
+            return;
+        }
+
+        try {
+            if (conn.isClosed()) {
+                createConn();
+            }
+        } catch (SQLException e) {
+            logger.error("Check connection failed.", e);
+        }
+    }
+
+    private void createConn() {
+        try {
+            conn = DriverManager.getConnection(jdbcUrl, username, password);
+        } catch (SQLException e) {
+            logger.error("Connection to database failed. Please check database params. url = {}, username = {}, password = {}", jdbcUrl,
+                    username, password, e);
+        }
+        logger.info("Create connection with database success.");
     }
 
 }

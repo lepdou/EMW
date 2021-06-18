@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://www.lepdou.org/schema/emwconfig"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.lepdou.org/schema/emwconfig"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:annotation>
+        <xsd:documentation><![CDATA[ EMW Config ]]></xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:element name="starter">
+        <xsd:annotation>
+            <xsd:documentation>
+                <![CDATA[ Apollo configuration section to integrate with Spring.]]>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:attribute name="jdbcUrl" type="xsd:string" use="required">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        <![CDATA[
+                            The database's jdbc url, like : jdbc:mysql://localhost:3306/emw
+                        ]]>
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="username" type="xsd:string" use="required">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        <![CDATA[
+                            The database's username, like: root
+                        ]]>
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="password" type="xsd:string" use="required">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        <![CDATA[
+                            The database's password, like: admin
+                        ]]>
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

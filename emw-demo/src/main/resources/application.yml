@@ -11,3 +11,7 @@ emw:
         url: jdbc:mysql://localhost:3306/emw
         username: root
         password: admin
+
+redis:
+  cache:
+    enabled: false

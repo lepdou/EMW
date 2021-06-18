@@ -2,8 +2,9 @@
  * Alipay.com Inc.
  * Copyright (c) 2004-2021 All Rights Reserved.
  */
-package com.lepdou.framework.emw.config.spring.annotation;
+package com.lepdou.framework.emw.config.spring;
 
+import com.lepdou.framework.emw.config.starter.EMWConfigSpringStarter;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;

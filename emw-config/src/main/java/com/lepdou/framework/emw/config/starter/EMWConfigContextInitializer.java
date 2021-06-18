@@ -2,10 +2,8 @@
  * Alipay.com Inc.
  * Copyright (c) 2004-2021 All Rights Reserved.
  */
-package com.lepdou.framework.emw.config.spring.boot;
+package com.lepdou.framework.emw.config.starter;
 
-import com.lepdou.framework.emw.config.EMWConfigParams;
-import com.lepdou.framework.emw.config.EMWConfigStarter;
 import com.lepdou.framework.emw.config.spring.EMWConfigConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +15,19 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
+ * <pre>
+ * SpringBoot 模式下的初始化入口.
+ *
+ * 需要在 application.yaml 里配置，例子：
+ * emw:
+ *   emw-config:
+ *     bootstrap:
+ *       jdbc:
+ *         url: jdbc:mysql://localhost:3306/emw
+ *         username: root
+ *         password: admin
+ * </pre>
+ *
  *
  * @author lepdou
  * @version : EMWConfigContextInitializer.java, v 0.1 2021年06月16日 下午7:35 lepdou Exp $

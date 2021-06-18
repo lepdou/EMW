@@ -5,7 +5,7 @@
 package com.lepdou.framework.emw.config.core.impl;
 
 import com.google.common.collect.Maps;
-import com.lepdou.framework.emw.config.EMWConfigParams;
+import com.lepdou.framework.emw.config.starter.EMWConfigParams;
 import com.lepdou.framework.emw.config.apollo.build.ApolloInjector;
 import com.lepdou.framework.emw.config.apollo.util.ConfigUtil;
 import com.lepdou.framework.emw.config.bean.ConfigDO;

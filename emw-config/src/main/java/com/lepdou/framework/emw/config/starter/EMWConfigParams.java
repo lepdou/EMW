@@ -2,7 +2,7 @@
  * Alipay.com Inc.
  * Copyright (c) 2004-2021 All Rights Reserved.
  */
-package com.lepdou.framework.emw.config;
+package com.lepdou.framework.emw.config.starter;
 
 import lombok.Builder;
 import lombok.Data;
@@ -45,5 +45,10 @@ public class EMWConfigParams {
      * 轮训数据库，日志打印采样比例。数值区间为[0~100]
      */
     private int pollingDBLogSampleRate;
+
+    /**
+     * rest http 服务端口
+     */
+    private int restPort;
 
 }

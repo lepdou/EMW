@@ -1,1 +1,2 @@
 http\://www.ctrip.com/schema/apollo=com.lepdou.framework.emw.config.apollo.spring.config.NamespaceHandler
+http\://www.lepdou.org/schema/emwconfig=com.lepdou.framework.emw.config.starter.EMWConfigNamespaceHandler

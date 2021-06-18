@@ -2,13 +2,16 @@
  * Alipay.com Inc.
  * Copyright (c) 2004-2021 All Rights Reserved.
  */
-package com.lepdou.framework.emw.config;
+package com.lepdou.framework.emw.config.starter;
 
+import com.lepdou.framework.emw.config.core.EMWConfigException;
 import com.lepdou.framework.emw.config.core.ConfigDAO;
 import com.lepdou.framework.emw.config.core.ConfigLoader;
 import com.lepdou.framework.emw.config.core.impl.DefaultConfigLoader;
 import com.lepdou.framework.emw.config.core.impl.DefaultConfigDAO;
 import com.lepdou.framework.emw.config.core.impl.DefaultDBConfigManager;
+import com.lepdou.framework.emw.config.facade.EMWConfigManagerFacade;
+import com.lepdou.framework.emw.config.facade.EMWConfigManagerRestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -17,7 +20,7 @@ import org.springframework.util.StringUtils;
  * <pre>
  * 非 spring 环境下，使用此入口初始化模块
  * Example:
- * String jdbcUrl = "jdbc:mysql://localhost:3306/emw";
+ *         String jdbcUrl = "jdbc:mysql://localhost:3306/emw";
  *         String username = "root";
  *         String password = "admin";
  *
@@ -40,7 +43,11 @@ public class EMWConfigStarter {
 
                     ConfigDAO configDAO = new DefaultConfigDAO(params.getJdbcUrl(), params.getUsername(), params.getPassword());
                     ConfigLoader configLoader = new DefaultConfigLoader(configDAO);
+                    EMWConfigManagerFacade.setConfigDAO(configDAO);
+
                     new DefaultDBConfigManager(configLoader, params);
+
+                    EMWConfigManagerRestController.start(8888);
 
                     initialized = true;
 
@@ -75,6 +82,10 @@ public class EMWConfigStarter {
 
         if (params.getPollingInterval() == 0) {
             params.setPollingInterval(3000);
+        }
+
+        if (params.getRestPort() == 0) {
+            params.setRestPort(8088);
         }
     }
 

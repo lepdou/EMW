@@ -1,6 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.lepdou.framework.emw.config.apollo.spring.boot.ApolloAutoConfiguration
 org.springframework.context.ApplicationContextInitializer=\
-com.lepdou.framework.emw.config.apollo.spring.boot.ApolloApplicationContextInitializer,com.lepdou.framework.emw.config.spring.boot.EMWConfigContextInitializer
+com.lepdou.framework.emw.config.apollo.spring.boot.ApolloApplicationContextInitializer,com.lepdou.framework.emw.config.starter.EMWConfigContextInitializer
 org.springframework.boot.env.EnvironmentPostProcessor=\
-com.lepdou.framework.emw.config.apollo.spring.boot.ApolloApplicationContextInitializer,com.lepdou.framework.emw.config.spring.boot.EMWConfigContextInitializer
+com.lepdou.framework.emw.config.apollo.spring.boot.ApolloApplicationContextInitializer,com.lepdou.framework.emw.config.starter.EMWConfigContextInitializer
