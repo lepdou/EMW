@@ -85,7 +85,7 @@ public class EMWConfigStarter {
         }
 
         if (params.getRestPort() == 0) {
-            params.setRestPort(8088);
+            params.setRestPort(18080);
         }
     }
 

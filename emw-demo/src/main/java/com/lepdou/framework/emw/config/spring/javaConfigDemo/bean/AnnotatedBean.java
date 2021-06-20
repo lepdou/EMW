@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * @author Jason Song(song_s@ctrip.com)
+ * @author lepdou (lepdou@126.com)
  */
 @Component("annotatedBean")
 public class AnnotatedBean {

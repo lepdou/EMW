@@ -5,7 +5,7 @@ import com.lepdou.framework.emw.config.spring.EnableEMWConfig;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author Jason Song(song_s@ctrip.com)
+ * @author lepdou (lepdou@126.com)
  */
 @Configuration
 //注入 application namespace

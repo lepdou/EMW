@@ -41,7 +41,7 @@ public class EMWConfigManagerFacade {
         return configDAO.update(config);
     }
 
-    public static ConfigDO findByNamespace(String appId, String namespace, String profile) {
+    public static ConfigDO findNamespace(String appId, String namespace, String profile) {
         return configDAO.findByNamespaceAndProfile(appId, namespace, profile);
     }
 

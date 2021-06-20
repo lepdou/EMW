@@ -60,9 +60,9 @@ public class EMWConfigManagerRestController extends SimpleChannelInboundHandler<
             serverBootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
             serverBootstrap.bind(port).sync();
 
-            logger.info("EMW rest Server started success, listening on port: " + port);
+            logger.info("EMW rest server started success, listening on port: " + port);
         } catch (Exception e) {
-            logger.info("EMW rest Server started failed. ", e);
+            logger.info("EMW rest server started failed. ", e);
             throw new EMWConfigException("EMW rest Server started failed. ", e);
         }
     }
@@ -95,7 +95,7 @@ public class EMWConfigManagerRestController extends SimpleChannelInboundHandler<
     private ConfigDO get(String content) {
         ConfigDO configDO = gson.fromJson(content, ConfigDO.class);
 
-        return EMWConfigManagerFacade.findByNamespace(configDO.getAppId(), configDO.getNamespace(), configDO.getProfile());
+        return EMWConfigManagerFacade.findNamespace(configDO.getAppId(), configDO.getNamespace(), configDO.getProfile());
     }
 
     private ConfigDO saveOrUpdate(String content) {
