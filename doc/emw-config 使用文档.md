@@ -417,14 +417,14 @@ emw-config 提供了两种形式的管理接口：
 > EMWConfigManagerFacade.createOrUpdateNamespace(ConfigDO config)
 
 **方式二：Restful 接口**
-> curl -d'login=emma\npassword=123'-X POST https://127.0.0.1:18080/emw/config
+> curl -X POST -d '{"appId":"default","namespace":"application","profile":"default","value":"timeout=12"}'  http://127.0.0.1:18080/emw/config
 
 ## 3.2 查询配置
 **方式一：Java 接口**
 > EMWConfigManagerFacade.findNamespace(String appId, String namespace, String profile)
 
 **方式二：Restful 接口**
-> curl -d'login=emma\npassword=123'-X GET https://127.0.0.1:18080/emw/config
+> curl -X GET -d '{"appId":"default","namespace":"application","profile":"default"}'  http://127.0.0.1:18080/emw/config
 
 # 4. 设置应用启动参数
 ## 4.1 AppId

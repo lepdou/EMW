@@ -47,7 +47,7 @@ public class EMWConfigStarter {
 
                     new DefaultDBConfigManager(configLoader, params);
 
-                    EMWConfigManagerRestController.start(8888);
+                    EMWConfigManagerRestController.start(params.getRestPort());
 
                     initialized = true;
 

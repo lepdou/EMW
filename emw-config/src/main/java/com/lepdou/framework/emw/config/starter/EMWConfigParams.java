@@ -145,4 +145,17 @@ public class EMWConfigParams {
     public void setRestPort(int restPort) {
         this.restPort = restPort;
     }
+
+    @Override
+    public String toString() {
+        return "EMWConfigParams{" +
+                "jdbcUrl='" + jdbcUrl + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", labels=" + labels +
+                ", pollingInterval=" + pollingInterval +
+                ", pollingDBLogSampleRate=" + pollingDBLogSampleRate +
+                ", restPort=" + restPort +
+                '}';
+    }
 }
