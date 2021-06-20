@@ -19,8 +19,10 @@ public class SimpleConfigDemo {
     private              Config config;
 
     public SimpleConfigDemo() {
+        //获取 application namespace 的配置
         config = ConfigService.getAppConfig();
 
+        //增加监听器，当配置变更的时候触发回调事件
         ConfigChangeListener changeListener = changeEvent -> {
 
             logger.info("Changes for namespace {}", changeEvent.getNamespace());
@@ -44,28 +46,32 @@ public class SimpleConfigDemo {
     }
 
     public static void main(String[] args) throws IOException {
+        //1. 启动 ewm-config 模块
         String jdbcUrl = "jdbc:mysql://localhost:3306/emw";
         String username = "root";
         String password = "admin";
 
-        EMWConfigStarter.run(EMWConfigParams.builder().jdbcUrl(jdbcUrl).username(username).password(password).build());
+        EMWConfigStarter.run(EMWConfigParams.createFromBaseParams(jdbcUrl, username, password));
 
         SimpleConfigDemo apolloConfigDemo = new SimpleConfigDemo();
 
         System.out.println(
                 "Apollo Config Demo. Please input key to get the value. Input quit to exit.");
 
+        //2. 获取配置
         while (true) {
             System.out.print("> ");
-            String input = new BufferedReader(new InputStreamReader(System.in, Charsets.UTF_8)).readLine();
-            if (input == null || input.length() == 0) {
+
+            String key = new BufferedReader(new InputStreamReader(System.in, Charsets.UTF_8)).readLine();
+            if (key == null || key.length() == 0) {
                 continue;
             }
-            input = input.trim();
-            if (input.equalsIgnoreCase("quit")) {
+            key = key.trim();
+            if (key.equalsIgnoreCase("quit")) {
                 System.exit(0);
             }
-            logger.info(apolloConfigDemo.getConfig(input));
+
+            logger.info(apolloConfigDemo.getConfig(key));
         }
     }
 }

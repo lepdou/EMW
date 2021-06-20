@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +47,6 @@ import java.util.Map;
  *
  * @author Jason Song(song_s@ctrip.com)
  */
-@ConditionalOnProperty("redis.cache.enabled")
 @ConfigurationProperties(prefix = "redis.cache")
 @Component("sampleRedisConfig")
 public class SampleRedisConfig {

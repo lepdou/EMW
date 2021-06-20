@@ -1,4 +1,4 @@
-package com.lepdou.framework.emw.config.spring.common.bean;
+package com.lepdou.framework.emw.config.spring.javaConfigDemo.bean;
 
 import com.lepdou.framework.emw.config.apollo.spring.annotation.ApolloJsonValue;
 import org.slf4j.Logger;

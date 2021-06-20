@@ -62,8 +62,12 @@ public class EMWConfigContextInitializer implements
         String jdbcUrl = environment.getProperty(EMWConfigConstants.EMW_CONFIG_BOOTSTRAP_JDBC_URL);
         String username = environment.getProperty(EMWConfigConstants.EMW_CONFIG_BOOTSTRAP_JDBC_USERNAME);
         String password = environment.getProperty(EMWConfigConstants.EMW_CONFIG_BOOTSTRAP_JDBC_PASSWORD);
+        String pollingInterval = environment.getProperty(EMWConfigConstants.EMW_CONFIG_BOOTSTRAP_POLLING_INTERVAL);
+        String pollingDBLogSampleRate = environment.getProperty(EMWConfigConstants.EMW_CONFIG_BOOTSTRAP_POLLING_DB_LOG_RATE);
+        String restPort = environment.getProperty(EMWConfigConstants.EMW_CONFIG_BOOTSTRAP_REST_PORT);
 
-        EMWConfigParams params = EMWConfigParams.builder().jdbcUrl(jdbcUrl).username(username).password(password).build();
+        EMWConfigParams params = EMWConfigParams.createFromOptionalStringParams(jdbcUrl, username, password, pollingInterval,
+                pollingDBLogSampleRate, restPort);
 
         EMWConfigStarter.run(params);
     }

@@ -2,7 +2,7 @@
 <configuration monitorInterval="60">
     <appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[apollo-demo][%t]%d %-5p [%c] %m%n"/>
+            <PatternLayout pattern="[%t]%d %-5p %m%n"/>
         </Console>
         <Async name="Async" includeLocation="true">
             <AppenderRef ref="Console"/>
@@ -10,9 +10,6 @@
     </appenders>
     <loggers>
         <logger name="com.lepdou.framework.emw" additivity="false" level="INFO">
-            <AppenderRef ref="Async"/>
-        </logger>
-        <logger name="com.ctrip.framework.apollo.demo" additivity="false" level="DEBUG">
             <AppenderRef ref="Async"/>
         </logger>
         <root level="INFO">

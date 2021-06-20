@@ -4,6 +4,7 @@
  */
 package com.lepdou.framework.emw.config.starter;
 
+import com.lepdou.framework.emw.config.spring.EMWConfigConstants;
 import com.lepdou.framework.emw.config.spring.EnableEMWConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +40,15 @@ public class EMWConfigSpringStarter implements ImportBeanDefinitionRegistrar {
 
         logger.info("Start to init emw-config module.");
 
-        String jdbcUrl = attributes.getString("jdbcUrl");
-        String username = attributes.getString("username");
-        String password = attributes.getString("password");
+        String jdbcUrl = attributes.getString(EMWConfigConstants.EMW_CONFIG_PARAM_JDBC_URL);
+        String username = attributes.getString(EMWConfigConstants.EMW_CONFIG_PARAM_JDBC_USERNAME);
+        String password = attributes.getString(EMWConfigConstants.EMW_CONFIG_PARAM_JDBC_PASSWORD);
+        String pollingInterval = attributes.getString(EMWConfigConstants.EMW_CONFIG_PARAM_POLLING_INTERVAL);
+        String pollingDBLogSampleRate = attributes.getString(EMWConfigConstants.EMW_CONFIG_PARAM_POLLING_DB_LOG_RATE);
+        String restPort = attributes.getString(EMWConfigConstants.EMW_CONFIG_PARAM_REST_PORT);
 
-        EMWConfigParams params = EMWConfigParams.builder().jdbcUrl(jdbcUrl).username(username).password(password).build();
+        EMWConfigParams params = EMWConfigParams.createFromOptionalStringParams(jdbcUrl, username, password, pollingInterval,
+                pollingDBLogSampleRate, restPort);
 
         EMWConfigStarter.run(params);
     }

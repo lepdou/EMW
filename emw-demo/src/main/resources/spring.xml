@@ -9,7 +9,7 @@
        http://www.ctrip.com/schema/apollo http://www.ctrip.com/schema/apollo.xsd
        http://www.lepdou.org/schema/emwconfig http://www.lepdou.org/schema/emwconfig.xsd">
 
-    <!--    初始化 emwconfig 模块-->
+    <!--    初始化 emwconfig 模块，注意保证 emwconfig-starter 在 apollo:config 之前，这样才能保证在注入apollo config之前获取到配置-->
     <emwconfig:starter jdbcUrl="jdbc:mysql://localhost:3306/emw" username="root" password="admin"/>
     <!-- 注入配置 -->
     <apollo:config order="10"/>

@@ -1,33 +1,24 @@
 package com.lepdou.framework.emw.config.spring.javaConfigDemo;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
-import com.lepdou.framework.emw.config.spring.common.bean.AnnotatedBean;
+import com.lepdou.framework.emw.config.spring.javaConfigDemo.bean.AnnotatedBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 
 /**
- * @author Jason Song(song_s@ctrip.com)
+ *  基于 Java 注解的方式启动 emw-config 模块
+ * @see com.lepdou.framework.emw.config.spring.javaConfigDemo.config.AppConfig
  */
 public class AnnotationApplication {
 
-    public static void main(String[] args) throws IOException {
-        ApplicationContext context = new AnnotationConfigApplicationContext("com.lepdou.framework.emw.config.spring.common");
+    public static void main(String[] args) throws InterruptedException {
+        ApplicationContext context = new AnnotationConfigApplicationContext("com.lepdou.framework.emw.config.spring.javaConfigDemo");
         AnnotatedBean annotatedBean = context.getBean(AnnotatedBean.class);
 
-        System.out.println("AnnotationApplication Demo. Input any key except quit to print the values. Input quit to exit.");
         while (true) {
-            System.out.print("> ");
-            String input = new BufferedReader(new InputStreamReader(System.in, Charsets.UTF_8)).readLine();
-            if (!Strings.isNullOrEmpty(input) && input.trim().equalsIgnoreCase("quit")) {
-                System.exit(0);
-            }
-
-            System.out.println(annotatedBean.toString());
+            TimeUnit.SECONDS.sleep(3);
+            System.err.println(annotatedBean.toString());
         }
     }
 }

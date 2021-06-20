@@ -36,7 +36,23 @@ public @interface EnableEMWConfig {
     String username();
 
     /**
-     * dabse password.
+     * database password.
      */
     String password();
+
+    /**
+     * log sample rate for polling db config.
+     */
+    String pollingDBLogSampleRate() default "";
+
+    /**
+     * the interval of polling db config.
+     */
+    String pollingInterval() default "";
+
+    /**
+     * the port for rest server.
+     */
+    String restPort() default "";
+
 }

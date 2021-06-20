@@ -43,6 +43,33 @@
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
+            <xsd:attribute name="pollingInterval" type="xsd:integer" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        <![CDATA[
+                            polling db config interval.
+                        ]]>
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="restPort" type="xsd:integer" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        <![CDATA[
+                            the port of rest server.
+                        ]]>
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="pollingDBLogSampleRate" type="xsd:integer" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        <![CDATA[
+                            log sample rate for polling db.
+                        ]]>
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>
