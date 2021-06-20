@@ -55,12 +55,13 @@ public class DefaultDBConfigManager implements DBConfigManager {
 
     @Override
     public void register(String namespace, DBConfigRepository configRepository) {
+        String appId = configUtil.getAppId();
         String profile = configUtil.getCluster();
-        String namespaceUniqueKey = NamespaceKeyUtils.genNamespaceUniqueKey(namespace, profile);
+        String namespaceUniqueKey = NamespaceKeyUtils.genNamespaceUniqueKey(appId, namespace, profile);
 
         namespaceMapRepo.put(namespaceUniqueKey, configRepository);
 
-        logger.info("Register namespace success. namespace = {}, profile = {}", namespace, profile);
+        logger.info("Register namespace success. appId ={}, namespace = {}, profile = {}", appId, namespace, profile);
     }
 
     @Override
@@ -68,9 +69,10 @@ public class DefaultDBConfigManager implements DBConfigManager {
         Object lock = namespaceMapLock.computeIfAbsent(namespace, k -> new Object());
 
         synchronized (lock) {
+            String appId = configUtil.getAppId();
             String profile = configUtil.getCluster();
 
-            return configLoader.load(namespace, profile);
+            return configLoader.load(appId, namespace, profile);
         }
     }
 
@@ -110,13 +112,14 @@ public class DefaultDBConfigManager implements DBConfigManager {
 
                 String[] namespaceInfo = NamespaceKeyUtils.parseFromNamespaceUniqueKey(namespaceUniqueKey);
 
-                ConfigDO configDO = configLoader.load(namespaceInfo[0], namespaceInfo[1]);
+                ConfigDO configDO = configLoader.load(namespaceInfo[0], namespaceInfo[1], namespaceInfo[2]);
 
                 boolean updated = configRepository.tryUpdateConfig(configDO);
 
                 if (updated) {
                     if (configDO != null) {
-                        logger.info("Find updated namespace. namespace = {}, profile = {}, new version = {}, new value = {}",
+                        logger.info("Find updated namespace. appId = {}, namespace = {}, profile = {}, new version = {}, new value = {}",
+                                configDO.getAppId(),
                                 configDO.getNamespace(), configDO.getProfile(),
                                 configDO.getVersion(), configDO.getValue());
                     } else {

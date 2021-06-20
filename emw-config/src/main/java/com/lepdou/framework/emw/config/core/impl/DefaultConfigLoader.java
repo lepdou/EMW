@@ -28,12 +28,12 @@ public class DefaultConfigLoader implements ConfigLoader {
     }
 
     @Override
-    public ConfigDO load(String namespace, String profile) {
-        ConfigDO configDO = configDAO.findByNamespaceAndProfile(namespace, profile);
+    public ConfigDO load(String appId, String namespace, String profile) {
+        ConfigDO configDO = configDAO.findByNamespaceAndProfile(appId, namespace, profile);
 
         //如果按 profile 获取不到配置，则 fallback 到 default namespace 粒度
         if (configDO == null && !Objects.equals(configUtil.getCluster(), ConfigConsts.CLUSTER_NAME_DEFAULT)) {
-            configDO = configDAO.findByNamespaceAndProfile(namespace, ConfigConsts.CLUSTER_NAME_DEFAULT);
+            configDO = configDAO.findByNamespaceAndProfile(appId, namespace, ConfigConsts.CLUSTER_NAME_DEFAULT);
         }
 
         return configDO;

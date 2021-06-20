@@ -14,6 +14,6 @@ import com.lepdou.framework.emw.config.bean.ConfigDO;
  */
 public interface ConfigLoader {
 
-    ConfigDO load(String namespace, String profile);
+    ConfigDO load(String appId, String namespace, String profile);
 
 }

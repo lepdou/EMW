@@ -57,7 +57,7 @@ public class ConfigUtil {
     public String getAppId() {
         String appId = Foundation.app().getAppId();
         if (Strings.isNullOrEmpty(appId)) {
-            appId = ConfigConsts.NO_APPID_PLACEHOLDER;
+            appId = "default";
             if (warnLogRateLimiter.tryAcquire()) {
                 logger.warn(
                         "app.id is not set, please make sure it is set in classpath:/META-INF/app.properties, now apollo will only load "

@@ -24,11 +24,12 @@ import java.util.List;
 public class DefaultConfigDAO implements ConfigDAO {
     private static final Logger logger = LoggerFactory.getLogger(DefaultConfigDAO.class);
 
-    private static final String SQL_FIND_BY_NAMESPACE_AND_PROFILE = "select * from emw_config where namespace = ? and profile = ?";
-    private static final String SQL_SAVE_CONFIG                   = "INSERT INTO `emw_config` (`namespace`, `profile`, `value`, "
-            + "`version`, `context`, `grayRules`, `gmt_create`, `gmt_modified`, `operator`) VALUES (?, ?, ?, 1, ?, ?, NOW(), NOW(), ?)";
-    private static final String SQL_UPDATE_CONFIG                 = "update emw_config set `value` = ?,version =version+1 where "
-            + "namespace = ? and profile=?";
+    private static final String SQL_FIND_BY_NAMESPACE_AND_PROFILE
+                                                  = "select * from emw_config where app_id = ? and namespace = ? and profile = ?";
+    private static final String SQL_SAVE_CONFIG   = "INSERT INTO `emw_config` (`app_id`, `namespace`, `profile`, `value`, "
+            + "`version`, `context`, `grayRules`, `gmt_create`, `gmt_modified`, `operator`) VALUES (?, ?, ?, ?, 1, ?, ?, NOW(), NOW(), ?)";
+    private static final String SQL_UPDATE_CONFIG = "update emw_config set `value` = ?,version =version+1 where "
+            + "app_id = ? and namespace = ? and profile=?";
 
     private Connection conn;
     private String     jdbcUrl;
@@ -55,7 +56,7 @@ public class DefaultConfigDAO implements ConfigDAO {
     }
 
     @Override
-    public ConfigDO findByNamespaceAndProfile(String namespace, String profile) {
+    public ConfigDO findByNamespaceAndProfile(String appId, String namespace, String profile) {
         if (profile == null) {
             profile = "";
         }
@@ -63,8 +64,9 @@ public class DefaultConfigDAO implements ConfigDAO {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(SQL_FIND_BY_NAMESPACE_AND_PROFILE);
-            st.setString(1, namespace);
-            st.setString(2, profile);
+            st.setString(1, appId);
+            st.setString(2, namespace);
+            st.setString(3, profile);
 
             ResultSet resultSet = st.executeQuery();
 
@@ -96,6 +98,7 @@ public class DefaultConfigDAO implements ConfigDAO {
 
         try {
             configDO.setId(rs.getLong(ConfigDO.FIELD_ID));
+            configDO.setAppId(rs.getString(ConfigDO.FIELD_APP_ID));
             configDO.setNamespace(rs.getString(ConfigDO.FIELD_NAMESPACE));
             configDO.setProfile(rs.getString(ConfigDO.FIELD_PROFILE));
             configDO.setValue(rs.getString(ConfigDO.FIELD_VALUE));
@@ -123,16 +126,17 @@ public class DefaultConfigDAO implements ConfigDAO {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(SQL_SAVE_CONFIG);
-            st.setString(1, configDO.getNamespace());
-            st.setString(2, configDO.getProfile());
-            st.setString(3, configDO.getValue());
-            st.setString(4, configDO.getContext());
-            st.setString(5, configDO.getGrayRules());
-            st.setString(6, configDO.getOperator());
+            st.setString(1, configDO.getAppId());
+            st.setString(2, configDO.getNamespace());
+            st.setString(3, configDO.getProfile());
+            st.setString(4, configDO.getValue());
+            st.setString(5, configDO.getContext());
+            st.setString(6, configDO.getGrayRules());
+            st.setString(7, configDO.getOperator());
 
             st.execute();
 
-            ConfigDO savedConfig = findByNamespaceAndProfile(configDO.getNamespace(), configDO.getProfile());
+            ConfigDO savedConfig = findByNamespaceAndProfile(configDO.getAppId(), configDO.getNamespace(), configDO.getProfile());
 
             logger.info("Save emw config success. config = {}", savedConfig);
 
@@ -158,12 +162,13 @@ public class DefaultConfigDAO implements ConfigDAO {
         try {
             st = conn.prepareStatement(SQL_UPDATE_CONFIG);
             st.setString(1, configDO.getValue());
-            st.setString(2, configDO.getNamespace());
-            st.setString(3, configDO.getProfile());
+            st.setString(2, configDO.getAppId());
+            st.setString(3, configDO.getNamespace());
+            st.setString(4, configDO.getProfile());
 
             st.executeUpdate();
 
-            ConfigDO updatedConfig = findByNamespaceAndProfile(configDO.getNamespace(), configDO.getProfile());
+            ConfigDO updatedConfig = findByNamespaceAndProfile(configDO.getAppId(), configDO.getNamespace(), configDO.getProfile());
 
             logger.info("Update emw config success. config = {}", updatedConfig);
 

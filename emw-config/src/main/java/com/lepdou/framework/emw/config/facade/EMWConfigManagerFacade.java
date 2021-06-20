@@ -32,7 +32,7 @@ public class EMWConfigManagerFacade {
             config.setProfile(ConfigConsts.CLUSTER_NAME_DEFAULT);
         }
 
-        ConfigDO managedConfigDO = configDAO.findByNamespaceAndProfile(config.getNamespace(), config.getProfile());
+        ConfigDO managedConfigDO = configDAO.findByNamespaceAndProfile(config.getAppId(), config.getNamespace(), config.getProfile());
 
         if (managedConfigDO == null) {
             return configDAO.save(config);
@@ -41,8 +41,8 @@ public class EMWConfigManagerFacade {
         return configDAO.update(config);
     }
 
-    public static ConfigDO findByNamespace(String namespace, String profile) {
-        return configDAO.findByNamespaceAndProfile(namespace, profile);
+    public static ConfigDO findByNamespace(String appId, String namespace, String profile) {
+        return configDAO.findByNamespaceAndProfile(appId, namespace, profile);
     }
 
     public static List<ConfigDO> findAll() {
@@ -50,6 +50,10 @@ public class EMWConfigManagerFacade {
     }
 
     private static void checkConfigField(ConfigDO config) {
+        if (StringUtils.isEmpty(config.getAppId())) {
+            throw new EMWConfigException("app id can not be empty.");
+        }
+
         if (StringUtils.isEmpty(config.getNamespace())) {
             throw new EMWConfigException("namespace can not be empty.");
         }

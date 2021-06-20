@@ -14,23 +14,25 @@ import org.springframework.util.StringUtils;
 public class NamespaceKeyUtils {
     private static final String SEPARATOR = "\\+";
 
-    public static String genNamespaceUniqueKey(String namespace, String profile) {
+    public static String genNamespaceUniqueKey(String appId, String namespace, String profile) {
         if (StringUtils.isEmpty(profile)) {
             return namespace;
         }
 
-        return namespace + "+" + profile;
+        return appId + "+" + namespace + "+" + profile;
     }
 
     public static String[] parseFromNamespaceUniqueKey(String namespaceUniqueKey) {
         String[] result = namespaceUniqueKey.split(SEPARATOR);
-        String namespace = result[0];
+
+        String appId = result[0];
+        String namespace = result[1];
         String profile = "";
 
-        if (result.length == 2) {
-            profile = result[1];
+        if (result.length == 3) {
+            profile = result[2];
         }
 
-        return new String[] {namespace, profile};
+        return new String[] {appId, namespace, profile};
     }
 }

@@ -95,7 +95,7 @@ public class EMWConfigManagerRestController extends SimpleChannelInboundHandler<
     private ConfigDO get(String content) {
         ConfigDO configDO = gson.fromJson(content, ConfigDO.class);
 
-        return EMWConfigManagerFacade.findByNamespace(configDO.getNamespace(), configDO.getProfile());
+        return EMWConfigManagerFacade.findByNamespace(configDO.getAppId(), configDO.getNamespace(), configDO.getProfile());
     }
 
     private ConfigDO saveOrUpdate(String content) {

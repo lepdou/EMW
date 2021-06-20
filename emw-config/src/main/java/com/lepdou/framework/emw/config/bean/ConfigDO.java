@@ -23,6 +23,7 @@ import java.util.Properties;
 @AllArgsConstructor
 public class ConfigDO {
     public static final String FIELD_ID            = "id";
+    public static final String FIELD_APP_ID        = "app_id";
     public static final String FIELD_NAMESPACE     = "namespace";
     public static final String FIELD_PROFILE       = "profile";
     public static final String FIELD_VALUE         = "value";
@@ -34,6 +35,10 @@ public class ConfigDO {
     public static final String FIELD_OPERATOR      = "operator";
 
     private long   id;
+    /**
+     *因为有时候多个应用共用数据库，所以通过 appId 隔离不用应用的配置。
+     */
+    private String appId;
     /**
      * namespace 相当于一个配置文件的文件名
      */

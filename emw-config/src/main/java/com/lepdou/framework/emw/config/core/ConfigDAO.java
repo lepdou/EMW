@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface ConfigDAO {
 
-    ConfigDO findByNamespaceAndProfile(String namespace, String profile);
+    ConfigDO findByNamespaceAndProfile(String appId, String namespace, String profile);
 
     List<ConfigDO> findAll();
 
